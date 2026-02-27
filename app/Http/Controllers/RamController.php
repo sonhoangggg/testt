@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Ram;
+use Illuminate\Http\Request;
+
+class RamController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = Ram::query();
+
+    if ($request->filled('keyword')) {
+        $query->where('value', 'like', '%' . $request->keyword . '%');
+    }
+    $rams = $query->orderByDesc('id')->paginate(5)->withQueryString();
+
+    return view('admin.rams.index', [
+        'rams' => $rams,
+        'type' => 'RAM',
+        'routePrefix' => 'rams',
+    ]);
+    }
+
+    public function create()
+    {
+        return view('admin.rams.create', [
+            'type' => 'RAM',
+            'routePrefix' => 'rams',
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'value' => 'required|string|max:255|unique:rams,value',
+        ], [
+            'value.required' => 'Vui lòng nhập dung lượng RAM',
+            'value.string'   => 'Dung lượng RAM phải là chuỗi ký tự',
+            'value.max'      => 'Dung lượng RAM không được vượt quá 255 ký tự',
+            'value.unique'   => 'Dung lượng RAM này đã tồn tại',
+        ]);
+
+        Ram::create(['value' => $request->value]);
+
+        return redirect()->route('rams.index')->with('success', 'Thêm RAM thành công.');
+    }
+
+    public function edit($id)
+    {
+        $rams = Ram::findOrFail($id);
+
+        return view('admin.rams.edit', [
+            'rams' => $rams,
+            'type' => 'RAM',
+            'routePrefix' => 'rams',
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $rams = Ram::findOrFail($id);
+
+        $request->validate([
+            'value' => 'required|string|max:255|unique:rams,value,' . $rams->id,
+        ]);
+
+        $rams->update(['value' => $request->value]);
+
+        return redirect()->route('rams.index')->with('success', 'Cập nhật RAM thành công.');
+    }
+
+  public function destroy($id)
+{
+    $ram = Ram::findOrFail($id);
+
+    $hasVariants = \App\Models\ProductVariant::where('ram_id', $id)->exists();
+
+    if ($hasVariants) {
+        return redirect()
+            ->route('rams.index')
+            ->with('error', 'RAM này đang được sử dụng bởi sản phẩm, không thể xóa.');
+    }
+
+    $ram->delete();
+
+    return redirect()
+        ->route('rams.index')
+        ->with('success', 'Xóa RAM thành công.');
+}
+
+}
