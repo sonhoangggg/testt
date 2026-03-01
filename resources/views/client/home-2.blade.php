@@ -110,89 +110,123 @@
                     <span class="material-symbols-outlined">chevron_right</span></a>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach ($products as $product)
-                    <div
-                        class="bg-white dark:bg-white/5 p-4 rounded-xl border border-transparent hover:border-primary transition-all group">
+                @foreach($products as $product)
 
-                        {{-- Ảnh --}}
-                        <a href="{{ route('product.show', $product->id) }}">
-                            <div class="relative rounded-lg overflow-hidden aspect-square bg-gray-100 mb-4">
-                                <div class="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-                                    style="background-image: url('{{ asset('storage/' . $product->image) }}');">
+                            <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition relative group flex flex-col overflow-hidden border">
+
+                                {{-- IMAGE --}}
+                                <div class="h-52 bg-gray-50 flex items-center justify-center relative">
+
+                                    @if($product->discount_price)
+                                        <span class="absolute top-3 left-3 bg-[#F4C430] text-black text-xs px-3 py-1 rounded-full font-semibold">
+                                            -{{ number_format((($product->price - $product->discount_price) / $product->price) * 100, 0) }}%
+                                        </span>
+                                    @endif
+
+                                    <img src="{{ asset('storage/' . $product->image) }}"
+                                         class="h-full object-contain p-4 group-hover:scale-105 transition duration-300"
+                                         alt="{{ $product->product_name }}">
                                 </div>
+
+                                {{-- INFO --}}
+                                <div class="p-4 flex flex-col flex-1">
+
+                                    <h4 class="font-medium text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
+                                        {{ $product->product_name }}
+                                    </h4>
+
+                                    <div class="mb-4">
+                                        <span class="text-lg font-bold text-black">
+                                            {{ number_format($product->discount_price ?? $product->price, 0, ',', '.') }} ₫
+                                        </span>
+
+                                        @if($product->discount_price)
+                                            <span class="text-sm line-through text-gray-400 ml-2">
+                                                {{ number_format($product->price, 0, ',', '.') }} ₫
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <div class="mt-auto flex gap-2">
+
+                                        <a href="{{ route('product.show', $product->id) }}"
+                                           class="flex-1 text-center border border-black text-black py-2 rounded-xl text-sm hover:bg-black hover:text-white transition">
+                                            Chi tiết
+                                        </a>
+
+                                        <button type="button"
+                                                onclick="toggleCartForm(this)"
+                                                class="flex-1 bg-[#F4C430] hover:bg-[#e0b020] text-black py-2 rounded-xl text-sm font-semibold transition">
+                                            Thêm
+                                        </button>
+
+                                    </div>
+                                </div>
+
+                                {{-- CART POPUP --}}
+                                <form action="{{ route('cart.add') }}"
+                                      method="POST"
+                                      class="cart-popup hidden absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-20">
+                                    @csrf
+
+                                    <div class="bg-white rounded-2xl shadow-2xl p-5 w-full max-w-xs">
+
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                                        @if ($product->variants->count() > 1)
+                                            <select name="product_variant_id"
+                                                    class="w-full border rounded-lg p-2 mb-3 text-sm focus:ring-2 focus:ring-[#F4C430]"
+                                                    required>
+                                                <option value="">-- Chọn phiên bản --</option>
+                                                @foreach($product->variants as $variant)
+                                                    <option value="{{ $variant->id }}">
+                                                        {{ $variant->ram->value ?? '' }} /
+                                                        {{ $variant->storage->value ?? '' }} /
+                                                        {{ $variant->color->value ?? '' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @else
+                                            <input type="hidden"
+                                                   name="product_variant_id"
+                                                   value="{{ $product->variants->first()->id ?? '' }}">
+                                        @endif
+
+                                        <div class="flex items-center mb-4 border rounded-lg overflow-hidden">
+                                            <button type="button"
+                                                    onclick="this.nextElementSibling.stepDown()"
+                                                    class="px-3 bg-gray-100">-</button>
+
+                                            <input type="number"
+                                                   name="quantity"
+                                                   value="1"
+                                                   min="1"
+                                                   max="99"
+                                                   class="w-full text-center outline-none">
+
+                                            <button type="button"
+                                                    onclick="this.previousElementSibling.stepUp()"
+                                                    class="px-3 bg-gray-100">+</button>
+                                        </div>
+
+                                        <div class="flex gap-2">
+                                            <button type="button"
+                                                    onclick="this.closest('.cart-popup').classList.add('hidden')"
+                                                    class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">
+                                                Huỷ
+                                            </button>
+
+                                            <button type="submit"
+                                                    class="flex-1 bg-black text-white py-2 rounded-lg text-sm hover:bg-gray-900 transition">
+                                                Xác nhận
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+
                             </div>
-                        </a>
 
-                        {{-- Tên sản phẩm --}}
-                        <a href="{{ route('product.show', $product->id) }}">
-                            <h3 class="font-bold text-lg mb-2 hover:text-primary transition">
-                                {{ $product->product_name }}
-                            </h3>
-                        </a>
-
-                        {{-- Rating --}}
-                        <div class="flex items-center gap-1 mb-2">
-                            @php
-                                $rating = round($product->reviews()->avg('rating') ?? 0);
-                                $reviewCount = $product->reviews()->count();
-                            @endphp
-
-                            @for ($i = 1; $i <= 5; $i++)
-                                <svg class="w-4 h-4 {{ $i <= $rating ? 'text-yellow-400' : 'text-gray-300' }}"
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.955a1
-                        1 0 00.95.69h4.162c.969 0 1.371 1.24.588
-                        1.81l-3.37 2.448a1 1 0 00-.364
-                        1.118l1.287 3.955c.3.921-.755
-                        1.688-1.54 1.118l-3.37-2.448a1
-                        1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.539-1.118l1.286-3.955a1
-                        1 0 00-.364-1.118L2.075 9.382c-.783-.57-.38-1.81.588-1.81h4.162a1
-                        1 0 00.95-.69l1.274-3.955z" />
-                                </svg>
-                            @endfor
-
-                            <span class="text-sm text-gray-500 ml-1">
-                                ({{ $reviewCount }})
-                            </span>
-                            <div class="flex items-center text-sm text-gray-500 mt-1 gap-1">
-                                <span class="material-symbols-outlined text-base">visibility</span>
-                                <span>{{ number_format($product->views) }}</span>
-                            </div>
-                        </div>
-
-                        {{-- Giá + nút --}}
-                        <div class="flex items-end justify-between mt-3">
-
-                            <div>
-                                @if ($product->discount_price)
-                                    <span class="text-red-600 text-lg font-bold block">
-                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                    </span>
-                                    <span class="text-gray-400 line-through text-sm">
-                                        {{ number_format($product->price, 0, ',', '.') }}₫
-                                    </span>
-                                @else
-                                    <span class="text-gray-800 text-lg font-bold">
-                                        {{ number_format($product->price, 0, ',', '.') }}₫
-                                    </span>
-                                @endif
-                            </div>
-
-                            {{-- Nút thêm giỏ hàng --}}
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                                @csrf
-                                <button
-                                    class="bg-black dark:bg-primary text-white dark:text-black w-10 h-10 rounded-lg flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
-                                    <span class="material-symbols-outlined text-lg">
-                                        add_shopping_cart
-                                    </span>
-                                </button>
-                            </form>
-
-                        </div>
-
-                    </div>
-                @endforeach
+                        @endforeach
             </div>
         </section>
         <section class="px-4 md:px-10 lg:px-20 mt-20">
@@ -325,4 +359,31 @@
             </div>
         </section>
     </main>
+    <script>
+    function toggleCartForm(button) {
+        // Lấy card cha
+        const card = button.closest('.group');
+
+        // Tìm popup trong card đó
+        const popup = card.querySelector('.cart-popup');
+
+        // Hiện popup
+        popup.classList.remove('hidden');
+    }
+
+    // Đóng popup khi click ra ngoài vùng trắng
+    document.addEventListener('click', function (e) {
+        const popups = document.querySelectorAll('.cart-popup');
+
+        popups.forEach(function (popup) {
+            if (!popup.classList.contains('hidden')) {
+                const content = popup.querySelector('.bg-white');
+
+                if (!content.contains(e.target) && !e.target.closest('button[onclick="toggleCartForm(this)"]')) {
+                    popup.classList.add('hidden');
+                }
+            }
+        });
+    });
+</script>
 @endsection
