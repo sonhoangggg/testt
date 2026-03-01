@@ -224,5 +224,31 @@
     </div>
 
 </div>
+<script>
+    function toggleCartForm(button) {
+        // Lấy card cha
+        const card = button.closest('.group');
 
+        // Tìm popup trong card đó
+        const popup = card.querySelector('.cart-popup');
+
+        // Hiện popup
+        popup.classList.remove('hidden');
+    }
+
+    // Đóng popup khi click ra ngoài vùng trắng
+    document.addEventListener('click', function (e) {
+        const popups = document.querySelectorAll('.cart-popup');
+
+        popups.forEach(function (popup) {
+            if (!popup.classList.contains('hidden')) {
+                const content = popup.querySelector('.bg-white');
+
+                if (!content.contains(e.target) && !e.target.closest('button[onclick="toggleCartForm(this)"]')) {
+                    popup.classList.add('hidden');
+                }
+            }
+        });
+    });
+</script>
 @endsection
