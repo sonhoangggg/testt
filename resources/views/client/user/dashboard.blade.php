@@ -1,50 +1,70 @@
 {{-- resources/views/client/user/dashboard.blade.php --}}
-@extends('client.layouts.app')
+@extends('client.layouts.app-2')
 
 @section('content')
-@push('styles')
-<style>
-    .tab-pane {
-        display: block !important;
-        opacity: 1 !important;
-    }
-</style>
-@endpush
+<script src="https://cdn.tailwindcss.com"></script>
 
-<div class="container py-5">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-sm rounded-3">
-                <div class="card-header bg-dark text-white fw-bold">
-                    <li class="dropdown-item">
-                        Xin chào, <span class="fw-bold">{{ Auth::check() ? Auth::user()->full_name : 'Khách' }}</span>
-                    </li>
+<div class="max-w-7xl mx-auto px-4 py-10">
 
+    <div class="grid md:grid-cols-4 gap-8">
+
+        {{-- ================= SIDEBAR ================= --}}
+        <div class="md:col-span-1">
+            <div class="bg-white rounded-2xl shadow overflow-hidden">
+
+                {{-- HEADER --}}
+                <div class="bg-black text-white px-6 py-5">
+                    <p class="text-sm">Xin chào,</p>
+                    <p class="font-semibold text-lg">
+                        {{ Auth::check() ? Auth::user()->full_name : 'Khách' }}
+                    </p>
                 </div>
-                <div class="list-group list-group-flush">
-                    <a href="{{ route('user.profile') }}" class="list-group-item list-group-item-action">👉 Thông tin cá nhân</a>
-                    <a href="{{ route('user.orders') }}" class="list-group-item list-group-item-action">👉 Quản lý đơn hàng</a>
-                    <a href="{{ route('client.promotions.index') }}" class="list-group-item list-group-item-action">👉 Mã giảm giá</a>
-                    <a href="#" class="list-group-item list-group-item-action text-danger"
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+
+                {{-- MENU --}}
+                <div class="flex flex-col text-sm">
+
+                    <a href="{{ route('user.profile') }}"
+                       class="px-6 py-3 border-b hover:bg-gray-100 transition">
+                        👉 Thông tin cá nhân
+                    </a>
+
+                    <a href="{{ route('user.orders') }}"
+                       class="px-6 py-3 border-b hover:bg-gray-100 transition">
+                        👉 Quản lý đơn hàng
+                    </a>
+
+                    <a href="{{ route('client.promotions.index') }}"
+                       class="px-6 py-3 border-b hover:bg-gray-100 transition">
+                        👉 Mã giảm giá
+                    </a>
+
+                    <a href="#"
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                       class="px-6 py-3 text-red-500 hover:bg-red-50 transition">
                         👉 Đăng xuất
                     </a>
-                    <form id="logout-form" action="{{ route('taikhoan.logout') }}" method="POST" style="display: none;">
+
+                    <form id="logout-form"
+                          action="{{ route('taikhoan.logout') }}"
+                          method="POST"
+                          class="hidden">
                         @csrf
                     </form>
+
                 </div>
+
             </div>
         </div>
 
-        <!-- Nội dung động -->
-        <div class="col-md-9">
-            <div class="card shadow-sm rounded-3">
-                <div class="card-body">
-                    @yield('dashboard-content')
-                </div>
+
+        {{-- ================= CONTENT ================= --}}
+        <div class="md:col-span-3">
+            <div class="bg-white rounded-2xl shadow p-6">
+                @yield('dashboard-content')
             </div>
         </div>
+
     </div>
+
 </div>
 @endsection

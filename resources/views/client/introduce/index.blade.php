@@ -1,122 +1,138 @@
-@extends('client.layouts.app')
+@extends('client.layouts.app-2')
 
 @section('content')
     {{-- Hero Section --}}
-    <section class="py-5 text-center text-white" style="background: linear-gradient(135deg, #ff6a00, #ff9800);">
-        <div class="container">
-            <h1 class="fw-bold display-4">Chào mừng đến với PowPow</h1>
-            <p class="lead mt-3 mx-auto" style="max-width: 700px;">
-                PowPow tự hào là đơn vị cung cấp các sản phẩm công nghệ & dịch vụ chất lượng cao,
-                luôn đặt khách hàng làm trung tâm. Chúng tôi không chỉ mang đến sản phẩm,
-                mà còn là giải pháp giúp bạn tối ưu hiệu quả và nâng cao trải nghiệm.
-            </p>
-            <a href="{{ route('client.categories') }}" class="btn btn-light btn-lg mt-3 fw-bold">Khám phá sản phẩm</a>
-        </div>
-    </section>
+    <!-- ===== Bee Phone Landing Page (Tailwind CSS) ===== -->
 
-    {{-- Sứ mệnh & Tầm nhìn --}}
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row text-center mb-4">
-                <h2 class="fw-bold">Sứ mệnh & Tầm nhìn</h2>
-                <p class="text-muted">Những giá trị cốt lõi tạo nên thương hiệu PowPow</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <div class="mb-3 fs-1 text-warning">🚀</div>
-                            <h5 class="fw-bold">Sứ mệnh</h5>
-                            <p>Đem đến cho khách hàng trải nghiệm mua sắm hiện đại,
-                               với sản phẩm chính hãng, chất lượng và dịch vụ tận tâm.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <div class="mb-3 fs-1 text-warning">🌍</div>
-                            <h5 class="fw-bold">Tầm nhìn</h5>
-                            <p>Trở thành thương hiệu được yêu thích hàng đầu tại Việt Nam,
-                               dẫn đầu về sự sáng tạo và uy tín trong từng sản phẩm.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <div class="mb-3 fs-1 text-warning">💡</div>
-                            <h5 class="fw-bold">Giá trị cốt lõi</h5>
-                            <p>Chính trực – Chất lượng – Đổi mới – Khách hàng là trung tâm.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- HERO -->
+<section class="py-20 text-center text-white bg-gradient-to-br from-amber-500 to-orange-600">
+    <div class="max-w-6xl mx-auto px-6">
+        <h1 class="text-4xl md:text-5xl font-extrabold">
+            Chào mừng đến với
+            <span class="text-black bg-white px-3 py-1 rounded-lg">Bee Phone</span>
+        </h1>
+        <p class="mt-6 text-lg max-w-2xl mx-auto text-orange-100">
+            Bee Phone chuyên cung cấp điện thoại chính hãng, phụ kiện công nghệ cao cấp
+            với mức giá tốt nhất. Cam kết chất lượng – Bảo hành uy tín – Hỗ trợ tận tâm.
+        </p>
+        <a href="{{ route('client.categories') }}"
+           class="inline-block mt-8 bg-white text-orange-600 font-bold px-8 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition">
+            Khám phá sản phẩm
+        </a>
+    </div>
+</section>
 
-    {{-- Số liệu nổi bật --}}
-    <section class="py-5">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-3">
-                    <h2 class="fw-bold text-warning">5000+</h2>
-                    <p>Khách hàng tin tưởng</p>
-                </div>
-                <div class="col-md-3">
-                    <h2 class="fw-bold text-warning">100+</h2>
-                    <p>Sản phẩm chất lượng</p>
-                </div>
-                <div class="col-md-3">
-                    <h2 class="fw-bold text-warning">10+</h2>
-                    <p>Năm kinh nghiệm</p>
-                </div>
-                <div class="col-md-3">
-                    <h2 class="fw-bold text-warning">99%</h2>
-                    <p>Khách hàng hài lòng</p>
-                </div>
-            </div>
+<!-- SỨ MỆNH - TẦM NHÌN -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <h2 class="text-3xl font-bold">Sứ mệnh & Tầm nhìn</h2>
+            <p class="text-gray-500 mt-2">Những giá trị làm nên thương hiệu Bee Phone</p>
         </div>
-    </section>
 
-    {{-- Testimonial --}}
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row text-center mb-4">
-                <h2 class="fw-bold">Khách hàng nói gì?</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow hover:shadow-xl transition text-center">
+                <div class="text-4xl mb-4">📱</div>
+                <h5 class="font-bold text-xl mb-3">Sứ mệnh</h5>
+                <p class="text-gray-600">
+                    Mang đến những mẫu điện thoại mới nhất, chính hãng
+                    với mức giá cạnh tranh và dịch vụ hậu mãi chuyên nghiệp.
+                </p>
             </div>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="p-4 shadow-sm bg-white rounded">
-                        <p>"Sản phẩm chất lượng, dịch vụ hỗ trợ cực kỳ tận tâm. Mình rất hài lòng!"</p>
-                        <h6 class="fw-bold mt-3">Nguyễn Văn A</h6>
-                        <small class="text-muted">Khách hàng thân thiết</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-4 shadow-sm bg-white rounded">
-                        <p>"Giao hàng nhanh, giá cả hợp lý, chắc chắn sẽ tiếp tục ủng hộ PowPow."</p>
-                        <h6 class="fw-bold mt-3">Trần Thị B</h6>
-                        <small class="text-muted">Doanh nghiệp SME</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-4 shadow-sm bg-white rounded">
-                        <p>"Mình đã thử nhiều nơi nhưng PowPow vẫn là lựa chọn số 1 vì uy tín và chất lượng."</p>
-                        <h6 class="fw-bold mt-3">Lê Văn C</h6>
-                        <small class="text-muted">Khách hàng lâu năm</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    {{-- CTA --}}
-    <section class="py-5 text-center text-white" style="background: linear-gradient(135deg, #ff9800, #ff6a00);">
-        <div class="container">
-            <h2 class="fw-bold mb-3">Sẵn sàng đồng hành cùng bạn</h2>
-            <p class="lead">Khám phá ngay những sản phẩm và dịch vụ chất lượng tại PowPow</p>
-            <a href="{{ route('client.categories') }}" class="btn btn-light btn-lg fw-bold">Bắt đầu ngay</a>
+            <div class="bg-white p-8 rounded-2xl shadow hover:shadow-xl transition text-center">
+                <div class="text-4xl mb-4">🚀</div>
+                <h5 class="font-bold text-xl mb-3">Tầm nhìn</h5>
+                <p class="text-gray-600">
+                    Trở thành hệ thống bán lẻ điện thoại uy tín hàng đầu Việt Nam,
+                    được khách hàng tin tưởng lựa chọn.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow hover:shadow-xl transition text-center">
+                <div class="text-4xl mb-4">💡</div>
+                <h5 class="font-bold text-xl mb-3">Giá trị cốt lõi</h5>
+                <p class="text-gray-600">
+                    Chính hãng – Minh bạch – Tận tâm – Đổi mới – Lấy khách hàng làm trung tâm.
+                </p>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- SỐ LIỆU -->
+<section class="py-20">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <h2 class="text-3xl font-extrabold text-orange-500">10.000+</h2>
+                <p class="text-gray-600 mt-2">Khách hàng tin tưởng</p>
+            </div>
+            <div>
+                <h2 class="text-3xl font-extrabold text-orange-500">300+</h2>
+                <p class="text-gray-600 mt-2">Mẫu điện thoại</p>
+            </div>
+            <div>
+                <h2 class="text-3xl font-extrabold text-orange-500">5+</h2>
+                <p class="text-gray-600 mt-2">Năm kinh nghiệm</p>
+            </div>
+            <div>
+                <h2 class="text-3xl font-extrabold text-orange-500">99%</h2>
+                <p class="text-gray-600 mt-2">Khách hàng hài lòng</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-14">
+            <h2 class="text-3xl font-bold">Khách hàng nói gì?</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <p class="text-gray-600">
+                    "Mua iPhone tại Bee Phone giá tốt hơn nhiều nơi khác,
+                    bảo hành rõ ràng và giao hàng cực nhanh!"
+                </p>
+                <h6 class="font-bold mt-4">Nguyễn Văn A</h6>
+                <span class="text-sm text-gray-400">Khách hàng thân thiết</span>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <p class="text-gray-600">
+                    "Nhân viên tư vấn nhiệt tình, hỗ trợ chọn máy phù hợp nhu cầu."
+                </p>
+                <h6 class="font-bold mt-4">Trần Thị B</h6>
+                <span class="text-sm text-gray-400">Doanh nghiệp SME</span>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <p class="text-gray-600">
+                    "Chính hãng, uy tín, mình đã mua 3 máy tại đây và rất hài lòng."
+                </p>
+                <h6 class="font-bold mt-4">Lê Văn C</h6>
+                <span class="text-sm text-gray-400">Khách hàng lâu năm</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 text-center text-white bg-gradient-to-br from-orange-600 to-amber-500">
+    <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+            Sẵn sàng nâng cấp chiếc điện thoại của bạn?
+        </h2>
+        <p class="text-orange-100 text-lg">
+            Khám phá ngay những sản phẩm chính hãng tại Bee Phone
+        </p>
+        <a href="{{ route('client.categories') }}"
+           class="inline-block mt-8 bg-white text-orange-600 font-bold px-8 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition">
+            Bắt đầu ngay
+        </a>
+    </div>
+</section>
 @endsection

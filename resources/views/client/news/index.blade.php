@@ -1,259 +1,217 @@
-@extends('client.layouts.app')
+@extends('client.layouts.app-2')
 
 @section('title', 'Tin tức - PowPow')
 
 @section('content')
-<div class="container">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h2 mb-0">Tin tức</h1>
-                    <p class="text-muted mb-0">Cập nhật những tin tức mới nhất về công nghệ</p>
-                </div>
-                <div class="d-flex gap-2">
-                    <form class="d-flex" method="GET" action="{{ route('client.news.index') }}">
-                        <input type="text" 
-                               class="form-control me-2" 
-                               name="search" 
-                               placeholder="Tìm kiếm tin tức..." 
-                               value="{{ request('search') }}">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="max-w-7xl mx-auto px-4 py-10">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
+        <div>
+            <h1 class="text-3xl font-bold">Tin tức</h1>
+            <p class="text-gray-500">Cập nhật những tin tức mới nhất về công nghệ</p>
         </div>
+
+        <form method="GET"
+              action="{{ route('client.news.index') }}"
+              class="flex">
+            <input type="text"
+                   name="search"
+                   placeholder="Tìm kiếm tin tức..."
+                   value="{{ request('search') }}"
+                   class="border rounded-l-xl px-4 py-2 focus:ring-2 focus:ring-black focus:outline-none text-sm">
+            <button type="submit"
+                class="bg-black text-white px-4 rounded-r-xl hover:bg-gray-800 transition">
+                🔍
+            </button>
+        </form>
     </div>
 
-    <!-- Featured News Section -->
+
+    {{-- FEATURED --}}
     @if($featuredNews->count() > 0)
-    <div class="row mb-5">
-        <div class="col-12">
-            <h3 class="h4 mb-3">Tin tức nổi bật</h3>
-            <div class="row">
-                @foreach($featuredNews as $featured)
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100 shadow-sm">
-                        @if($featured->featured_image)
-                        <img src="{{ asset('storage/' . $featured->featured_image) }}" 
-                             class="card-img-top" 
-                             alt="{{ $featured->title }}"
-                             style="height: 200px; object-fit: cover;">
-                        @else
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                             style="height: 200px;">
-                            <i class="fas fa-newspaper fa-3x text-muted"></i>
+    <div class="mb-14">
+        <h3 class="text-xl font-semibold mb-6">Tin tức nổi bật</h3>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            @foreach($featuredNews as $featured)
+            <div class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
+
+                @if($featured->featured_image)
+                <img src="{{ asset('storage/' . $featured->featured_image) }}"
+                     class="w-full h-52 object-cover"
+                     alt="{{ $featured->title }}">
+                @else
+                <div class="w-full h-52 bg-gray-100 flex items-center justify-center text-gray-400">
+                    📰
+                </div>
+                @endif
+
+                <div class="p-5 space-y-3">
+                    <div class="flex justify-between text-xs text-gray-500">
+                        <span class="bg-black text-white px-2 py-1 rounded-full text-[10px]">
+                            Nổi bật
+                        </span>
+                        <span>{{ $featured->published_at->format('d/m/Y') }}</span>
+                    </div>
+
+                    <h4 class="font-semibold hover:text-blue-600 transition">
+                        <a href="{{ route('client.news.show', $featured->slug) }}">
+                            {{ Str::limit($featured->title, 60) }}
+                        </a>
+                    </h4>
+
+                    <p class="text-sm text-gray-500">
+                        {{ Str::limit($featured->summary, 100) }}
+                    </p>
+
+                    <div class="flex justify-between text-xs text-gray-400 pt-2">
+                        <span>{{ $featured->author ?: 'Admin' }}</span>
+                        <span>👁 {{ $featured->view_count }}</span>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+
+    <div class="grid lg:grid-cols-3 gap-10">
+
+        <!-- NEWS LIST -->
+        <div class="lg:col-span-2">
+
+            @if($news->count() > 0)
+
+            <div class="grid md:grid-cols-2 gap-6">
+                @foreach($news as $item)
+                <div class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
+
+                    @if($item->featured_image)
+                    <img src="{{ asset('storage/' . $item->featured_image) }}"
+                         class="w-full h-44 object-cover"
+                         alt="{{ $item->title }}">
+                    @else
+                    <div class="w-full h-44 bg-gray-100 flex items-center justify-center text-gray-400">
+                        📰
+                    </div>
+                    @endif
+
+                    <div class="p-4 space-y-2">
+
+                        <div class="flex justify-between text-xs text-gray-500">
+                            @if($item->is_hot)
+                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-[10px]">
+                                Hot
+                            </span>
+                            @endif
+                            <span>{{ $item->published_at->format('d/m/Y') }}</span>
                         </div>
-                        @endif
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge bg-primary">Nổi bật</span>
-                                <small class="text-muted">{{ $featured->published_at->format('d/m/Y') }}</small>
-                            </div>
-                            <h5 class="card-title">
-                                <a href="{{ route('client.news.show', $featured->slug) }}" 
-                                   class="text-decoration-none text-dark">
-                                    {{ Str::limit($featured->title, 60) }}
-                                </a>
-                            </h5>
-                            <p class="card-text text-muted">
-                                {{ Str::limit($featured->summary, 100) }}
-                            </p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="fas fa-user me-1"></i>
-                                    {{ $featured->author ?: 'Admin' }}
-                                </small>
-                                <small class="text-muted">
-                                    <i class="fas fa-eye me-1"></i>
-                                    {{ $featured->view_count }}
-                                </small>
-                            </div>
+
+                        <h5 class="font-medium hover:text-blue-600 transition">
+                            <a href="{{ route('client.news.show', $item->slug) }}">
+                                {{ Str::limit($item->title, 50) }}
+                            </a>
+                        </h5>
+
+                        <p class="text-sm text-gray-500">
+                            {{ Str::limit($item->summary, 80) }}
+                        </p>
+
+                        <div class="flex justify-between text-xs text-gray-400 pt-2">
+                            <span>{{ $item->author ?: 'Admin' }}</span>
+                            <span>👁 {{ $item->view_count }}</span>
                         </div>
                     </div>
                 </div>
                 @endforeach
             </div>
-        </div>
-    </div>
-    @endif
 
-    <!-- Main Content -->
-    <div class="row">
-        <!-- News List -->
-        <div class="col-lg-8">
-            @if($news->count() > 0)
-                <div class="row">
-                    @foreach($news as $item)
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            @if($item->featured_image)
-                            <img src="{{ asset('storage/' . $item->featured_image) }}" 
-                                 class="card-img-top" 
-                                 alt="{{ $item->title }}"
-                                 style="height: 180px; object-fit: cover;">
-                            @else
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                                 style="height: 180px;">
-                                <i class="fas fa-newspaper fa-2x text-muted"></i>
-                            </div>
-                            @endif
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    @if($item->is_hot)
-                                    <span class="badge bg-danger">Hot</span>
-                                    @endif
-                                    <small class="text-muted">{{ $item->published_at->format('d/m/Y') }}</small>
-                                </div>
-                                <h6 class="card-title">
-                                    <a href="{{ route('client.news.show', $item->slug) }}" 
-                                       class="text-decoration-none text-dark">
-                                        {{ Str::limit($item->title, 50) }}
-                                    </a>
-                                </h6>
-                                <p class="card-text text-muted small">
-                                    {{ Str::limit($item->summary, 80) }}
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted">
-                                        <i class="fas fa-user me-1"></i>
-                                        {{ $item->author ?: 'Admin' }}
-                                    </small>
-                                    <small class="text-muted">
-                                        <i class="fas fa-eye me-1"></i>
-                                        {{ $item->view_count }}
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
+            <!-- PAGINATION -->
+            <div class="mt-10">
+                {{ $news->appends(request()->query())->links() }}
+            </div>
 
-                <!-- Pagination -->
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $news->appends(request()->query())->links() }}
-                </div>
             @else
-                <div class="text-center py-5">
-                    <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Không có tin tức nào</h5>
-                    <p class="text-muted">Hãy quay lại sau để xem tin tức mới nhất</p>
-                </div>
+            <div class="text-center py-16 text-gray-500">
+                <div class="text-4xl mb-4">📰</div>
+                <h5 class="font-medium">Không có tin tức nào</h5>
+                <p>Hãy quay lại sau để xem tin tức mới nhất</p>
+            </div>
             @endif
+
         </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Hot News Sidebar -->
+
+        <!-- SIDEBAR -->
+        <div class="space-y-8">
+
             @if($hotNews->count() > 0)
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-fire text-danger me-2"></i>
-                        Tin tức hot
-                    </h5>
-                </div>
-                <div class="card-body p-0">
+            <div class="bg-white rounded-2xl shadow p-5">
+                <h5 class="font-semibold mb-4 flex items-center gap-2">
+                    🔥 Tin tức hot
+                </h5>
+
+                <div class="space-y-4">
                     @foreach($hotNews as $hot)
-                    <div class="p-3 border-bottom">
-                        <div class="d-flex">
-                            @if($hot->featured_image)
-                            <img src="{{ asset('storage/' . $hot->featured_image) }}" 
-                                 class="rounded me-3" 
-                                 alt="{{ $hot->title }}"
-                                 style="width: 60px; height: 60px; object-fit: cover;">
-                            @else
-                            <div class="rounded me-3 bg-light d-flex align-items-center justify-content-center" 
-                                 style="width: 60px; height: 60px;">
-                                <i class="fas fa-newspaper text-muted"></i>
-                            </div>
-                            @endif
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <a href="{{ route('client.news.show', $hot->slug) }}" 
-                                       class="text-decoration-none text-dark">
-                                        {{ Str::limit($hot->title, 40) }}
-                                    </a>
-                                </h6>
-                                <small class="text-muted">
-                                    {{ $hot->published_at->format('d/m/Y') }}
-                                </small>
+                    <div class="flex gap-3">
+
+                        @if($hot->featured_image)
+                        <img src="{{ asset('storage/' . $hot->featured_image) }}"
+                             class="w-16 h-16 object-cover rounded-lg"
+                             alt="{{ $hot->title }}">
+                        @else
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                            📰
+                        </div>
+                        @endif
+
+                        <div>
+                            <a href="{{ route('client.news.show', $hot->slug) }}"
+                               class="text-sm font-medium hover:text-blue-600 transition">
+                                {{ Str::limit($hot->title, 40) }}
+                            </a>
+                            <div class="text-xs text-gray-400">
+                                {{ $hot->published_at->format('d/m/Y') }}
                             </div>
                         </div>
+
                     </div>
                     @endforeach
                 </div>
             </div>
             @endif
 
-            <!-- Categories (if needed) -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-tags me-2"></i>
-                        Danh mục
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ route('client.news.index') }}" 
-                           class="badge bg-primary text-decoration-none">
-                            Tất cả
-                        </a>
-                        <a href="{{ route('client.news.index', ['category' => 'technology']) }}" 
-                           class="badge bg-secondary text-decoration-none">
-                            Công nghệ
-                        </a>
-                        <a href="{{ route('client.news.index', ['category' => 'gaming']) }}" 
-                           class="badge bg-success text-decoration-none">
-                            Gaming
-                        </a>
-                        <a href="{{ route('client.news.index', ['category' => 'reviews']) }}" 
-                           class="badge bg-info text-decoration-none">
-                            Đánh giá
-                        </a>
-                    </div>
+
+            <!-- CATEGORIES -->
+            <div class="bg-white rounded-2xl shadow p-5">
+                <h5 class="font-semibold mb-4">Danh mục</h5>
+
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <a href="{{ route('client.news.index') }}"
+                       class="px-3 py-1 bg-black text-white rounded-full">
+                        Tất cả
+                    </a>
+                    <a href="{{ route('client.news.index', ['category' => 'technology']) }}"
+                       class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300">
+                        Công nghệ
+                    </a>
+                    <a href="{{ route('client.news.index', ['category' => 'gaming']) }}"
+                       class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300">
+                        Gaming
+                    </a>
+                    <a href="{{ route('client.news.index', ['category' => 'reviews']) }}"
+                       class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300">
+                        Đánh giá
+                    </a>
                 </div>
             </div>
+
         </div>
+
     </div>
 </div>
 @endsection
-
-@push('styles')
-<style>
-.card {
-    transition: transform 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card-title a:hover {
-    color: #007bff !important;
-}
-
-.badge {
-    font-size: 0.75rem;
-}
-
-.pagination {
-    justify-content: center;
-}
-
-.pagination .page-link {
-    color: #007bff;
-    border-color: #dee2e6;
-}
-
-.pagination .page-item.active .page-link {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-</style>
-@endpush 

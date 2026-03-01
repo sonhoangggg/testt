@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Promotion;
 use Illuminate\Support\Facades\Session;
-use App\Models\News; 
+use App\Models\News;
 class ProductClientController extends Controller
 {
     // thêm dòng này ở đầu file
@@ -44,7 +44,7 @@ public function index()
     Session::forget('checkout_selected');
 
     // Truyền thêm $latestNews ra view
-    return view('client.home', compact(
+    return view('client.home-2', compact(
         'products',
         'featuredProducts',
         'latestPromotions',
@@ -54,14 +54,14 @@ public function index()
 
 public function show($id, Request $request)
 {
-    
+
 
     $limit = $request->get('limit', 6); // Lấy limit từ query, mặc định 6
 
     $product = Product::with(['variants.images','variants.ram', 'variants.storage', 'variants.color'])
         ->findOrFail($id);
     $product->increment('views');
-
+    // dd($product);
     $relatedProducts = Product::where('category_id', $product->category_id)
         ->where('id', '!=', $product->id)
         ->where('status', 1)
