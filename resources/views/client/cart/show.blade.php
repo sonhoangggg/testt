@@ -1,39 +1,39 @@
-@extends('client.layouts.app')
+@extends('client.layouts.app-2')
 
 @section('content')
-<style>
-    .cart-wrapper {max-width: 1000px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); padding: 24px;}
-    .cart-table th, .cart-table td { vertical-align: middle !important; }
-    .cart-table img { max-width: 80px; border-radius: 8px; }
-    .cart-summary { background: #f8f9fa; border-radius: 8px; padding: 20px; }
-    .cart-summary h4 { font-weight: 600; color: #333; }
-    .btn-checkout { font-size: 16px; padding: 12px 24px; border-radius: 8px; min-width: 220px; }
-    .table thead th { background: #e9ecef; }
-</style>
 
-<div class="container my-5">
-    <div class="cart-wrapper">
-        <h2 class="fw-bold mb-4 text-center">🛒 Giỏ hàng của bạn</h2>
+<div class="max-w-6xl mx-auto px-4 py-10">
+
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+
+        <h2 class="text-2xl font-bold text-center mb-6">
+            🛒 Giỏ hàng của bạn
+        </h2>
 
         @if ($cart && $cart->details->count())
+
         <form id="checkout-form" action="{{ route('cart.updateBeforeCheckout') }}" method="POST">
             @csrf
 
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle cart-table">
-                    <thead class="table-light text-center">
-                        <tr>
-                            <th><input type="checkbox" id="select-all"></th>
-                            <th>Ảnh</th>
-                            <th>Sản phẩm</th>
-                            <th>Phiên bản</th>
-                            <th>Giá</th>
-                            <th>Số lượng</th>
-                            <th>Thành tiền</th>
-                            <th>Xóa</th>
+            <div class="overflow-x-auto">
+                <table class="w-full border border-gray-200 rounded-xl overflow-hidden">
+                    <thead class="bg-gray-100 text-gray-700 text-sm">
+                        <tr class="text-center">
+                            <th class="p-3">
+                                <input type="checkbox" id="select-all" class="w-4 h-4">
+                            </th>
+                            <th class="p-3">Ảnh</th>
+                            <th class="p-3 text-left">Sản phẩm</th>
+                            <th class="p-3">Phiên bản</th>
+                            <th class="p-3">Giá</th>
+                            <th class="p-3">Số lượng</th>
+                            <th class="p-3">Thành tiền</th>
+                            <th class="p-3">Xóa</th>
                         </tr>
                     </thead>
-                    <tbody>
+
+                    <tbody class="divide-y">
+
                         @foreach ($cart->details as $item)
                             @php
                                 $price = $item->variant
@@ -41,58 +41,104 @@
                                         ? $item->variant->discount_price : $item->variant->price)
                                     : (($item->product->discount_price && $item->product->discount_price < $item->product->price)
                                         ? $item->product->discount_price : $item->product->price);
+
                                 $subtotal = $item->quantity * $price;
                             @endphp
-                            <tr data-id="{{ $item->id }}" data-price="{{ $price }}">
-                                <td class="text-center">
-                                    <input type="checkbox" class="item-checkbox" name="selected_items[]" value="{{ $item->id }}" checked>
+
+                            <tr class="text-center hover:bg-gray-50 transition"
+                                data-id="{{ $item->id }}"
+                                data-price="{{ $price }}">
+
+                                <td class="p-3">
+                                    <input type="checkbox"
+                                           class="item-checkbox w-4 h-4"
+                                           name="selected_items[]"
+                                           value="{{ $item->id }}"
+                                           checked>
                                 </td>
-                                <td class="text-center">
-                                    <img src="{{ asset('storage/' . $item->product->image) }}" width="80">
+
+                                <td class="p-3">
+                                    <img src="{{ asset('storage/' . $item->product->image) }}"
+                                         class="w-20 h-20 object-cover rounded-lg border mx-auto">
                                 </td>
-                                <td>{{ $item->product->product_name }}</td>
-<td>
+
+                                <td class="p-3 text-left font-medium">
+                                    {{ $item->product->product_name }}
+                                </td>
+
+                                <td class="p-3 text-sm text-gray-600">
                                     @if ($item->variant)
                                         {{ $item->variant->ram->value ?? '?' }} /
                                         {{ $item->variant->storage->value ?? '?' }} /
                                         {{ $item->variant->color->value ?? '?' }}
-                                    @else - @endif
+                                    @else
+                                        -
+                                    @endif
                                 </td>
-                                <td class="text-danger fw-bold">{{ number_format($price,0,',','.') }} đ</td>
-                                <td class="text-center">
-    <input type="number"
-           class="form-control form-control-sm quantity-input text-center"
-           name="quantities[{{ $item->id }}]"
-           value="{{ $item->quantity }}"
-           min="1"
-           max="{{ $item->variant ? $item->variant->quantity - 1 : $item->product->quantity - 1 }}"
-           style="width: 100px;">
-</td>
 
-                                <td class="fw-bold subtotal">{{ number_format($subtotal,0,',','.') }} đ</td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger btn-sm btn-delete-item" data-id="{{ $item->id }}">
-                                        <i class="fa fa-trash"></i>
+                                <td class="p-3 font-semibold text-red-600">
+                                    {{ number_format($price,0,',','.') }} đ
+                                </td>
+
+                                <td class="p-3">
+                                    <input type="number"
+                                           class="quantity-input w-20 text-center border rounded-lg py-1"
+                                           name="quantities[{{ $item->id }}]"
+                                           value="{{ $item->quantity }}"
+                                           min="1"
+                                           max="{{ $item->variant ? $item->variant->quantity - 1 : $item->product->quantity - 1 }}">
+                                </td>
+
+                                <td class="p-3 font-bold subtotal">
+                                    {{ number_format($subtotal,0,',','.') }} đ
+                                </td>
+
+                                <td class="p-3">
+                                    <button type="button"
+                                            class="btn-delete-item bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm transition"
+                                            data-id="{{ $item->id }}">
+                                        🗑
                                     </button>
                                 </td>
+
                             </tr>
+
                         @endforeach
+
                     </tbody>
                 </table>
             </div>
 
-            <div class="cart-summary mt-4 text-end">
-                <h4>Tổng cộng: <span id="total-price" class="text-danger fw-bold">0 đ</span></h4>
-                <button type="submit" class="btn btn-success btn-checkout mt-3">
-                    <i class="fa fa-credit-card"></i> Tiến hành thanh toán
+            {{-- Tổng tiền --}}
+            <div class="mt-6 bg-gray-50 rounded-xl p-6 text-right space-y-4">
+
+                <h4 class="text-lg font-semibold">
+                    Tổng cộng:
+                    <span id="total-price" class="text-red-600 text-xl font-bold">
+                        0 đ
+                    </span>
+                </h4>
+
+                <button type="submit"
+                        class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition shadow-md">
+                    💳 Tiến hành thanh toán
                 </button>
+
             </div>
+
         </form>
+
         @else
-            <div class="alert alert-info">Giỏ hàng của bạn đang trống!</div>
+
+            <div class="bg-blue-50 border border-blue-200 text-blue-600 p-6 rounded-xl text-center">
+                Giỏ hàng của bạn đang trống!
+            </div>
+
         @endif
+
     </div>
 </div>
+
 
 <script>
 function formatCurrency(amount) {
@@ -115,16 +161,25 @@ function updateTotal() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.item-checkbox').forEach(cb => cb.addEventListener('change', updateTotal));
-    document.querySelectorAll('.quantity-input').forEach(input => input.addEventListener('input', updateTotal));
-document.getElementById('select-all').addEventListener('change', function() {
-        document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = this.checked);
+
+    document.querySelectorAll('.item-checkbox').forEach(cb =>
+        cb.addEventListener('change', updateTotal)
+    );
+
+    document.querySelectorAll('.quantity-input').forEach(input =>
+        input.addEventListener('input', updateTotal)
+    );
+
+    document.getElementById('select-all').addEventListener('change', function() {
+        document.querySelectorAll('.item-checkbox').forEach(cb =>
+            cb.checked = this.checked
+        );
         updateTotal();
     });
 
-    // ==== XÓA SẢN PHẨM BẰNG AJAX ====
     document.querySelectorAll('.btn-delete-item').forEach(button => {
         button.addEventListener('click', function () {
+
             const id = this.dataset.id;
             if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
 
@@ -135,34 +190,26 @@ document.getElementById('select-all').addEventListener('change', function() {
                     'Accept': 'application/json'
                 }
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Lỗi từ server');
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // Xóa dòng trong bảng
                     const row = document.querySelector(`tr[data-id="${id}"]`);
                     if (row) row.remove();
-
-                    // Cập nhật tổng tiền
                     updateTotal();
-
-                    // Thông báo thành công
                     alert(data.message);
                 } else {
-                    // Thông báo lỗi từ server
                     alert(data.message || 'Không thể xóa sản phẩm.');
                 }
             })
-            .catch((err) => {
-                console.error(err);
+            .catch(() => {
                 alert('Đã xảy ra lỗi khi xóa sản phẩm.');
             });
+
         });
     });
 
-    updateTotal(); // Gọi hàm cập nhật tổng tiền
+    updateTotal();
 });
 </script>
+
 @endsection

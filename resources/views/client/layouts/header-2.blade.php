@@ -11,11 +11,12 @@
             </div>
         </a>
         <nav class="hidden lg:flex items-center gap-8">
-            <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Sản phẩm</a>
-            <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Danh mục</a>
+            <a class="text-sm font-medium hover:text-primary transition-colors"
+                href="{{ route('client.categories') }}">Sản phẩm</a>
             <a class="text-sm font-medium hover:text-primary transition-colors"
                 href="{{ route('client.introduce') }}">Giới thiệu</a>
-            <a class="text-sm font-medium hover:text-primary transition-colors" href="{{route('client.news.index')}}">Tin tức</a>
+            <a class="text-sm font-medium hover:text-primary transition-colors"
+                href="{{ route('client.news.index') }}">Tin tức</a>
             <a class="text-sm font-medium hover:text-primary transition-colors" href="#">Liên hệ</a>
         </nav>
         <div class="flex flex-1 justify-end items-center gap-4 max-w-xl">
@@ -42,15 +43,12 @@
                     <div id="userMenu"
                         class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 space-y-2">
                         @if (Auth::guard('account')->check())
-                            <a href="{{route('user.dashboard')}}">
-                                <button class="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Hồ sơ
-                            </button>
+                            <a href="{{ route('user.dashboard') }}">
+                                <button
+                                    class="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Hồ sơ
+                                </button>
                             </a>
-
-                            <button class="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Cài đặt
-                            </button>
 
                             @if (Auth::guard('account')->user()->role_id === 1 || Auth::guard('account')->user()->role_id === 2)
                                 <a href="{{ route('admin.dashboard') }}" class="nav-link text-success"> <button
@@ -64,16 +62,15 @@
                                         Đăng xuất
                                     </button>
                                 </form>
-
                             @else
-                            <form action="{{ route('taikhoan.logout') }}" method="POST">
-                                @csrf
-                                <button
-                                    class="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500">
-                                    Đăng xuất
-                                </button>
-                            </form>
-                             @endif
+                                <form action="{{ route('taikhoan.logout') }}" method="POST">
+                                    @csrf
+                                    <button
+                                        class="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500">
+                                        Đăng xuất
+                                    </button>
+                                </form>
+                            @endif
                         @else
                             <a href="{{ route('taikhoan.login') }}"><button
                                     class="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500">
@@ -85,14 +82,20 @@
 
 
                 </div>
+
+                @if (Auth::guard('account')->check() && Auth::guard('account')->user()->role_id === 3)
                 <button
                     class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f5f3f0] dark:bg-white/5 hover:bg-primary transition-colors group relative">
+                        <a href="{{route('cart.show')}}">
+                        <span
+                            class="material-symbols-outlined text-[#181611] dark:text-white group-hover:text-black">shopping_cart</span>
+                    </a>
                     <span
-                        class="material-symbols-outlined text-[#181611] dark:text-white group-hover:text-black">shopping_cart</span>
-                    <span
-                        class="absolute -top-1 -right-1 bg-primary text-[10px] font-bold px-1 rounded-full text-black">3</span>
+                    class="absolute -top-1 -right-1 bg-primary text-[10px] font-bold px-1 rounded-full text-black">3</span>
                 </button>
+                @endif
             </div>
+
             <script>
                 const btn = document.getElementById("userBtn");
                 const menu = document.getElementById("userMenu");

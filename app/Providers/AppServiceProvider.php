@@ -22,18 +22,26 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-        {
-            View::composer('admin.*', function ($view) {
-                $adminId = session('admin_id');
-                $admin = null;
+    {
+        View::composer('admin.*', function ($view) {
+            $adminId = session('admin_id');
+            $admin = null;
 
-                if (!empty($adminId)) {
-                    $admin = Account::find($adminId);
-                }
+            if (!empty($adminId)) {
+                $admin = Account::find($adminId);
+            }
 
-                $view->with('admin', $admin);
-            });
-        
+            $view->with('admin', $admin);
+        });
+        // View::composer('client.layouts.header-2', function ($view) {
+        //     $cart = session()->get('cart', []);
+        //     $cartCount = 0;
 
+        //     foreach ($cart as $item) {
+        //         $cartCount += $item['quantity'];
+        //     }
+
+        //     $view->with('cartCount', $cartCount);
+        // });
     }
 }

@@ -72,7 +72,7 @@
 <body class="bg-background-light dark:bg-background-dark text-[#181611] dark:text-white transition-colors duration-200">
     @include('client.layouts.header-2')
     @yield('content')
-    <div class="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-3 pointer-events-none">
+    {{-- <div class="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-3 pointer-events-none">
         <div
             class="bg-white dark:bg-[#181611] p-4 rounded-2xl shadow-2xl border border-primary/20 max-w-[240px] pointer-events-auto transform translate-y-2 opacity-0 animate-[fade-in-up_0.5s_ease-out_forwards] delay-500">
             <p class="text-sm font-medium leading-relaxed">Chào bạn! Tôi có thể giúp bạn chọn chiếc điện thoại phù hợp
@@ -87,7 +87,7 @@
                 <span class="relative inline-flex rounded-full h-4 w-4 bg-primary border-2 border-white"></span>
             </span>
         </button>
-    </div>
+    </div> --}}
     @include('client.layouts.footer-2')
     <style>
         @keyframes fade-in-up {
