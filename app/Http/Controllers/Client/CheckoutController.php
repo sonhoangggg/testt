@@ -287,7 +287,7 @@ class CheckoutController extends Controller
      */
     public function store(Request $request)
     {
-
+        // dd($request->all());
         $request->validate([
             'voucher_id' => ['nullable', 'exists:promotions,id'],
             'payment_method' => ['required', 'in:cod,bank,momo,wallet'], // thêm wallet
