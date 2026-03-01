@@ -1,4 +1,4 @@
-@extends('client.layouts.app-2')
+@extends('client.layouts.app')
 
 @section('title', 'Tin tức - PowPow')
 
