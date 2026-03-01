@@ -1,4 +1,4 @@
-@extends('client.layouts.app-2')
+@extends('client.layouts.app')
 @section('content')
     <div class="flex justify-center mt-16 px-4">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">

@@ -44,7 +44,7 @@ public function index()
     Session::forget('checkout_selected');
 
     // Truyền thêm $latestNews ra view
-    return view('client.home-2', compact(
+    return view('client.home', compact(
         'products',
         'featuredProducts',
         'latestPromotions',

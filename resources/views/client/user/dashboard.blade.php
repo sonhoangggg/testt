@@ -1,5 +1,5 @@
 {{-- resources/views/client/user/dashboard.blade.php --}}
-@extends('client.layouts.app-2')
+@extends('client.layouts.app')
 
 @section('content')
 <script src="https://cdn.tailwindcss.com"></script>
