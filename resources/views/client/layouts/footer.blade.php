@@ -1,82 +1,92 @@
 <!-- Flash sales start -->
 <section class="newsletter-section">
-  <div class="newsletter-container">
-    <div class="newsletter-image">
-      <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/drone.png" alt="Drone" />
+    <div class="newsletter-container">
+        <div class="newsletter-image">
+            <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/drone.png" alt="Drone" />
+        </div>
+        <div class="newsletter-content">
+            <h2>Nhận Mọi Cập Nhật</h2>
+            <p>Become a premium member and get 20% off your next purchase!</p>
+            <div class="newsletter-form">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" placeholder="Nhập email..." />
+                <button>Đăng Ký Ngay</button>
+            </div>
+        </div>
     </div>
-    <div class="newsletter-content">
-      <h2>Nhận Mọi Cập Nhật</h2>
-      <p>Become a premium member and get 20% off your next purchase!</p>
-      <div class="newsletter-form">
-        <i class="fa-regular fa-envelope"></i>
-        <input type="email" placeholder="Nhập email..." />
-        <button>Đăng Ký Ngay</button>
-      </div>
-    </div>
-  </div>
 </section>
 
 <style>
-.newsletter-section {
-  background: #f9f9fb;
-  padding: 40px 0;
-}
-.newsletter-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 1200px;
-  margin: auto;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-.newsletter-image img {
-  max-width: 400px;
-  width: 100%;
-  height: auto;
-}
-.newsletter-content {
-  flex: 1;
-  min-width: 300px;
-}
-.newsletter-content h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-.newsletter-content p {
-  margin-bottom: 20px;
-  color: #555;
-}
-.newsletter-form {
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-.newsletter-form i {
-  margin: 0 10px;
-  color: #aaa;
-}
-.newsletter-form input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 12px 10px;
-  font-size: 14px;
-}
-.newsletter-form button {
-  background: #ffd700;
-  border: none;
-  padding: 12px 20px;
-  cursor: pointer;
-  font-weight: bold;
-  color: #000;
-}
-.newsletter-form button:hover {
-  background: #ffc700;
-}
+    .newsletter-section {
+        background: #f9f9fb;
+        padding: 40px 0;
+    }
+
+    .newsletter-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 1200px;
+        margin: auto;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .newsletter-image img {
+        max-width: 400px;
+        width: 100%;
+        height: auto;
+    }
+
+    .newsletter-content {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .newsletter-content h2 {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .newsletter-content p {
+        margin-bottom: 20px;
+        color: #555;
+    }
+
+    .newsletter-form {
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .newsletter-form i {
+        margin: 0 10px;
+        color: #aaa;
+    }
+
+    .newsletter-form input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+
+    .newsletter-form button {
+        background: #ffd700;
+        border: none;
+        padding: 12px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #000;
+    }
+
+    .newsletter-form button:hover {
+        background: #ffc700;
+    }
 </style>
 
 
@@ -111,7 +121,8 @@
             <div class="col-xl-3 col-lg-6 col-md-6">
                 <div class="el2-footer-widget el2-footer-contact">
                     <img src="./Pretty Store_files/mona-2-e1709794932514.png" alt="logo" class="img-fluid">
-                    <p class="mt-20 mb-20">Với chất lượng hàng đầu, chúng tôi cam kết mang đến cho khách hàng những trải nghiệm tuyệt vời và sự hài lòng tuyệt đối.</p>
+                    <p class="mt-20 mb-20">Với chất lượng hàng đầu, chúng tôi cam kết mang đến cho khách hàng những trải
+                        nghiệm tuyệt vời và sự hài lòng tuyệt đối.</p>
                     <h4 class="fw-semibold mb-3">Theo dõi</h4>
                     <div class="el2-footer-social">
                         <a href="https://www.facebook.com/"><i class="fab fa-facebook"></i></a>
@@ -166,7 +177,8 @@
                     <h4 class="mb-4 fw-semibold">Thông tin cửa hàng</h4>
                     <div class="d-flex align-items-center gap-3 flex-wrap el2-foo-icon-hover mb-20">
                         <span class="el2-footer-icon">
-                            <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/calling-icon.svg" alt="">
+                            <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/calling-icon.svg"
+                                alt="">
                         </span>
                         <div class="tel-info">
                             <span>Bạn cần trợ giúp?</span>
@@ -189,11 +201,16 @@
                 <div class="col-lg-6">
                     <div class="text-lg-end">
                         <span class="me-2">We Accept</span>
-                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/Visa.svg" alt="Visa" class="payment-img">
-                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/PayPal.svg" alt="PayPal" class="payment-img">
-                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/Mastercard.svg" alt="Mastercard" class="payment-img">
-                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/GooglePay.svg" alt="GooglePay" class="payment-img">
-                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/ApplePay.svg" alt="ApplePay" class="payment-img">
+                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/Visa.svg" alt="Visa"
+                            class="payment-img">
+                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/PayPal.svg" alt="PayPal"
+                            class="payment-img">
+                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/Mastercard.svg"
+                            alt="Mastercard" class="payment-img">
+                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/GooglePay.svg" alt="GooglePay"
+                            class="payment-img">
+                        <img src="https://e-tech.monamedia.net/wp-content/uploads/2023/10/ApplePay.svg" alt="ApplePay"
+                            class="payment-img">
                     </div>
                 </div>
             </div>

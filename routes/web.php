@@ -43,6 +43,9 @@ use App\Http\Controllers\ContactController as ControllersContactController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RolePermissionController;
 
+Route::get('test', function () {
+    return view('client.home-2');
+});
 // Trang mặc định → login admin
 Route::get('/', function () {
     return redirect()->route('home');
@@ -65,14 +68,14 @@ Route::get('/login', [AccountController::class, 'showLoginForm'])->name('login')
 Route::post('/login', [AccountController::class, 'login'])->name('taikhoan.login');
 Route::post('/register', [AccountController::class, 'register'])->name('taikhoan.register');
 
-    Route::get('forgot-password', [AccountController::class, 'showForgotForm'])->name('password.request');
-    Route::post('forgot-password', [AccountController::class, 'sendResetLink'])->name('password.email');
-    Route::get('reset-password/{token}', [AccountController::class, 'showResetForm'])->name('password.reset');
-    Route::post('reset-password', [AccountController::class, 'resetPassword'])->name('password.update');
+Route::get('forgot-password', [AccountController::class, 'showForgotForm'])->name('password.request');
+Route::post('forgot-password', [AccountController::class, 'sendResetLink'])->name('password.email');
+Route::get('reset-password/{token}', [AccountController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password', [AccountController::class, 'resetPassword'])->name('password.update');
 
-    Route::get('/products', [ProductClientController::class, 'index'])->name('product.all');
+Route::get('/products', [ProductClientController::class, 'index'])->name('product.all');
 // 🌟 Các chức năng yêu cầu đăng nhập
-Route::middleware('auth','prevent.admin.order')->group(function () {
+Route::middleware('auth', 'prevent.admin.order')->group(function () {
     Route::post('/logout', [AccountController::class, 'logout'])->name('taikhoan.logout');
     Route::post('/buy-now', [ClientCartController::class, 'buyNow'])->name('cart.buyNow');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
@@ -156,7 +159,7 @@ Route::middleware('auth','prevent.admin.order')->group(function () {
 
     //
     Route::get('/lien-he', [ContactController::class, 'showContactForm'])->name('client.contact');
-Route::post('/lien-he', [ContactController::class, 'submitContactForm'])->name('client.contact.submit');
+    Route::post('/lien-he', [ContactController::class, 'submitContactForm'])->name('client.contact.submit');
 });
 Route::post('/chatbot/send', [ChatbotController::class, 'send']);
 // Khu vực quản trị (admin)
@@ -247,39 +250,39 @@ Route::prefix('admin')->group(function () {
     Route::resource('customers', CustomersControllerr::class)
         ->middleware('check.permission:customer-manage')
         ->names('customers');
-        Route::resource('accounts', AccountController::class)
+    Route::resource('accounts', AccountController::class)
         ->middleware('check.permission:staff-manage')
         ->names('accounts')
         ->except(['show']); // loại bỏ route show
 
-        Route::get('accounts/show', [AccountController::class, 'show'])->middleware('check.permission:profile-view')->name('admin.profile');
+    Route::get('accounts/show', [AccountController::class, 'show'])->middleware('check.permission:profile-view')->name('admin.profile');
 
-        Route::post('accounts/update-profile', [AccountController::class, 'updateAdminProfile'])
+    Route::post('accounts/update-profile', [AccountController::class, 'updateAdminProfile'])
         ->middleware('check.permission:profile-view')->name('admin.updateProfile');
-        Route::post('accounts/update-password', [AccountController::class, 'updateAdminPassword'])
+    Route::post('accounts/update-password', [AccountController::class, 'updateAdminPassword'])
         ->middleware('check.permission:profile-view')->name('admin.updatePassword');
     // Roles
     Route::resource('roles', RoleController::class)
         ->middleware('check.permission:role-manage')
-                        ->names('roles');
+        ->names('roles');
     Route::resource('promotions', PromotionController::class)
-    ->middleware('check.permission:promotion-manage')
-    ->names('promotions');
+        ->middleware('check.permission:promotion-manage')
+        ->names('promotions');
 
-                // Orders
-                Route::get('/orders', [OrderController::class, 'index'])
-                    ->middleware('check.permission:order-manage')
-                    ->name('admin.orders.index');
+    // Orders
+    Route::get('/orders', [OrderController::class, 'index'])
+        ->middleware('check.permission:order-manage')
+        ->name('admin.orders.index');
 
-                Route::get('/orders/{id}', [OrderController::class, 'show'])
-                    ->middleware('check.permission:order-manage')
-                    ->name('admin.orders.show');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])
+        ->middleware('check.permission:order-manage')
+        ->name('admin.orders.show');
 
-                Route::put('/orders/{id}', [OrderController::class, 'update'])
-                    ->middleware('check.permission:order-manage')
-                    ->name('admin.orders.update');
+    Route::put('/orders/{id}', [OrderController::class, 'update'])
+        ->middleware('check.permission:order-manage')
+        ->name('admin.orders.update');
 
-// Return requests
+    // Return requests
     Route::get('return-requests', [OrderController::class, 'listReturnRequests'])->name('admin.return_requests.index');
     Route::get('return-requests/{id}/approve', [OrderController::class, 'approveReturnRequest'])->name('admin.return_requests.approve');
     Route::get('return-requests/{id}/reject', [OrderController::class, 'rejectReturnRequest'])->name('admin.return_requests.reject');
@@ -289,40 +292,40 @@ Route::prefix('admin')->group(function () {
     Route::get('/admin/orders/{id}/refund-detail', [OrderController::class, 'refundDetail'])->name('admin.orders.refund_detail');
     //giao lại
     Route::post('/orders/{order}/resend', [OrderController::class, 'resendOrder'])
-    ->name('admin.orders.resend');
+        ->name('admin.orders.resend');
 
-                Route::resource('news', NewsController::class)
-                ->middleware('check.permission:news-manage');
-                Route::post('/news/{id}/toggle-featured', [NewsController::class, 'toggleFeatured'])->name('admin.news.toggle-featured')
-                ->middleware('check.permission:news-manage');
-                Route::post('/news/{id}/toggle-hot', [NewsController::class, 'toggleHot'])->name('admin.news.toggle-hot')
-                ->middleware('check.permission:news-manage');
-                Route::post('/news/bulk-action', [NewsController::class, 'bulkAction'])->name('admin.news.bulk-action')
-                ->middleware('check.permission:news-manage');
-                Route::post('/news/test-upload', [NewsController::class, 'testUpload'])->name('admin.news.test-upload')
-                ->middleware('check.permission:news-manage');
+    Route::resource('news', NewsController::class)
+        ->middleware('check.permission:news-manage');
+    Route::post('/news/{id}/toggle-featured', [NewsController::class, 'toggleFeatured'])->name('admin.news.toggle-featured')
+        ->middleware('check.permission:news-manage');
+    Route::post('/news/{id}/toggle-hot', [NewsController::class, 'toggleHot'])->name('admin.news.toggle-hot')
+        ->middleware('check.permission:news-manage');
+    Route::post('/news/bulk-action', [NewsController::class, 'bulkAction'])->name('admin.news.bulk-action')
+        ->middleware('check.permission:news-manage');
+    Route::post('/news/test-upload', [NewsController::class, 'testUpload'])->name('admin.news.test-upload')
+        ->middleware('check.permission:news-manage');
 
-                Route::get('/admin/contact', [ControllersContactController::class, 'index'])->name('admin.contact.index')
-                ->middleware('check.permission:contact-manage');
-                Route::get('/admin/contact/{id}', [ControllersContactController::class, 'show'])->name('admin.contact.show')
-                ->middleware('check.permission:contact-manage');
-                Route::put('/admin/contact/{id}/status', [ControllersContactController::class, 'updateStatus'])->name('admin.contact.status')
-                ->middleware('check.permission:contact-manage');
-                Route::delete('/admin/contact/{id}', [ControllersContactController::class, 'destroy'])->name('admin.contact.destroy')
-                ->middleware('check.permission:contact-manage');
-                // Role + Permission Assign
-                Route::get('/assign', [RolePermissionController::class, 'assign'])
-                // ->middleware('check.permission:permission-manage')
-                ->name('roles.permissions.assign');
-                Route::post('/assign', [RolePermissionController::class, 'storeAssign'])
-                // ->middleware('check.permission:permission-manage')
-                ->name('roles.permissions.storeAssign');
+    Route::get('/admin/contact', [ControllersContactController::class, 'index'])->name('admin.contact.index')
+        ->middleware('check.permission:contact-manage');
+    Route::get('/admin/contact/{id}', [ControllersContactController::class, 'show'])->name('admin.contact.show')
+        ->middleware('check.permission:contact-manage');
+    Route::put('/admin/contact/{id}/status', [ControllersContactController::class, 'updateStatus'])->name('admin.contact.status')
+        ->middleware('check.permission:contact-manage');
+    Route::delete('/admin/contact/{id}', [ControllersContactController::class, 'destroy'])->name('admin.contact.destroy')
+        ->middleware('check.permission:contact-manage');
+    // Role + Permission Assign
+    Route::get('/assign', [RolePermissionController::class, 'assign'])
+        // ->middleware('check.permission:permission-manage')
+        ->name('roles.permissions.assign');
+    Route::post('/assign', [RolePermissionController::class, 'storeAssign'])
+        // ->middleware('check.permission:permission-manage')
+        ->name('roles.permissions.storeAssign');
 
-                Route::get('comments', [CommentSController::class, 'index'])->name('comments.index')
-                ->middleware('check.permission:comment-manage');
-                Route::get('/hide/{id}', [CommentSController::class, 'hide'])->name('comments.hide')
-                ->middleware('check.permission:comment-manage');
-                Route::get('/show/{id}', [CommentSController::class, 'showComment'])->name('comments.showComment')
-                ->middleware('check.permission:comment-manage');
-                Route::post('/logout', [AccountController::class, 'logout'])->name('admin.logout');
-                });
+    Route::get('comments', [CommentSController::class, 'index'])->name('comments.index')
+        ->middleware('check.permission:comment-manage');
+    Route::get('/hide/{id}', [CommentSController::class, 'hide'])->name('comments.hide')
+        ->middleware('check.permission:comment-manage');
+    Route::get('/show/{id}', [CommentSController::class, 'showComment'])->name('comments.showComment')
+        ->middleware('check.permission:comment-manage');
+    Route::post('/logout', [AccountController::class, 'logout'])->name('admin.logout');
+});

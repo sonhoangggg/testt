@@ -731,51 +731,53 @@
                                                     alt="{{ $promotion->title }}" class="img-thumbnail me-3"
                                                     width="80">
 
-                                             {{-- Nội dung --}}
-                                <div>
-                                    <h6 class="mb-1 text-truncate">{{ $promotion->title }}</h6>
-                                    <p class="mb-1 small text-muted text-truncate">
-                                        {{ $promotion->description }}
-                                    </p>
+                                                {{-- Nội dung --}}
+                                                <div>
+                                                    <h6 class="mb-1 text-truncate">{{ $promotion->title }}</h6>
+                                                    <p class="mb-1 small text-muted text-truncate">
+                                                        {{ $promotion->description }}
+                                                    </p>
 
-                                   {{-- Nếu có sản phẩm trong khuyến mãi --}}
-@if ($promotion->products->isNotEmpty())
-    @php
-        $product = $promotion->products->first();
-    @endphp
+                                                    {{-- Nếu có sản phẩm trong khuyến mãi --}}
+                                                    @if ($promotion->products->isNotEmpty())
+                                                        @php
+                                                            $product = $promotion->products->first();
+                                                        @endphp
 
-    <div class="d-flex align-items-center mb-2">
-        {{-- Ảnh sản phẩm --}}
-        <img src="{{ asset('storage/' . $product->image) }}" 
-             alt="{{ $product->product_name }}" 
-             class="img-thumbnail me-2" 
-             style="width: 80px; height: 80px; object-fit: cover;">
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            {{-- Ảnh sản phẩm --}}
+                                                            <img src="{{ asset('storage/' . $product->image) }}"
+                                                                alt="{{ $product->product_name }}"
+                                                                class="img-thumbnail me-2"
+                                                                style="width: 80px; height: 80px; object-fit: cover;">
 
-        <div>
-            <p class="mb-1 fw-medium">
-                Sản phẩm: {{ $product->product_name }}
-            </p>
-            <p class="mb-1 text-danger fw-bold">
-                @if ($promotion->discount_type === 'percentage')
-                    Giảm: {{ $promotion->discount_value }}%
-                @else
-                    Giảm: {{ number_format($promotion->discount_value, 0, ',', '.') }} ₫
-                @endif
-            </p>
-        </div>
-    </div>
-@endif
+                                                            <div>
+                                                                <p class="mb-1 fw-medium">
+                                                                    Sản phẩm: {{ $product->product_name }}
+                                                                </p>
+                                                                <p class="mb-1 text-danger fw-bold">
+                                                                    @if ($promotion->discount_type === 'percentage')
+                                                                        Giảm: {{ $promotion->discount_value }}%
+                                                                    @else
+                                                                        Giảm:
+                                                                        {{ number_format($promotion->discount_value, 0, ',', '.') }}
+                                                                        ₫
+                                                                    @endif
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    @endif
 
 
-                                    <p class="mb-0 text-success fw-bold">
-                                        Hạn: {{ $promotion->end_date->format('d/m/Y') }}
-                                    </p>
-                                </div>
-                            </a>
-                        </div>
-                    @empty
-                        <p>Chưa có khuyến mãi nào.</p>
-                    @endforelse
+                                                    <p class="mb-0 text-success fw-bold">
+                                                        Hạn: {{ $promotion->end_date->format('d/m/Y') }}
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    @empty
+                                        <p>Chưa có khuyến mãi nào.</p>
+                                    @endforelse
 
 
                                 </div>

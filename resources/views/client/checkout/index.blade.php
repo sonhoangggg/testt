@@ -1,328 +1,167 @@
-@extends('client.layouts.app')
+@extends('client.layouts.app-2')
 
 @section('content')
-    <div class="container py-5">
-        <h3 class="mb-4">🛒 Xác nhận đơn hàng</h3>
+<script src="https://cdn.tailwindcss.com"></script>
 
-        {{-- Hiển thị thông báo lỗi --}}
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
+<div class="max-w-6xl mx-auto px-4 py-10">
+
+    <h2 class="text-3xl font-bold mb-8">🛒 Xác nhận đơn hàng</h2>
+
+    {{-- ALERT --}}
+    @if (session('error'))
+        <div class="mb-6 p-4 rounded-lg bg-red-100 text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="mb-6 p-4 rounded-lg bg-green-100 text-green-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('buy_now') || (isset($cartItems) && count($cartItems)))
+
+    <form method="POST"
+          action="{{ route('checkout.store') }}"
+          id="checkout-form"
+          data-phone="{{ Auth::user()->phone }}"
+          data-address="{{ Auth::user()->address }}"
+          class="space-y-8">
+        @csrf
+
+        {{-- GRID 2 CỘT --}}
+        <div class="grid md:grid-cols-2 gap-8">
+
+            {{-- USER INFO --}}
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h3 class="text-lg font-semibold mb-4 border-b pb-2">📌 Thông tin người nhận</h3>
+
+                <div class="space-y-2 text-sm">
+                    <p><strong>Họ tên:</strong> {{ Auth::user()->full_name }}</p>
+                    <p><strong>Email:</strong> {{ Auth::user()->email }}</p>
+                    <p><strong>SĐT:</strong> {{ Auth::user()->phone ?? 'Chưa có' }}</p>
+                    <p><strong>Địa chỉ:</strong> {{ Auth::user()->address ?? 'Chưa có' }}</p>
+                </div>
+
+                <a href="{{ route('user.profile') }}"
+                   class="inline-block mt-4 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+                    Cập nhật thông tin
+                </a>
             </div>
-        @endif
 
-        {{-- Hiển thị thông báo thành công --}}
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-        @if (session('buy_now') || (isset($cartItems) && count($cartItems)))
-            <form method="POST" action="{{ route('checkout.store') }}" id="checkout-form"
-                data-phone="{{ Auth::user()->phone }}" data-address="{{ Auth::user()->address }}">
-                @csrf
+            {{-- PRODUCT INFO --}}
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h3 class="text-lg font-semibold mb-4 border-b pb-2">📦 Thông tin sản phẩm</h3>
 
-                @if (!$buyNow && isset($cartItems))
+                @if ($buyNow && isset($product))
+                    <div class="space-y-2 text-sm">
+                        <p><strong>Tên:</strong> {{ $product->product_name }}</p>
+                        @if ($variant)
+                            <p><strong>Phiên bản:</strong>
+                                {{ $variant->ram->value ?? '' }} /
+                                {{ $variant->storage->value ?? '' }} /
+                                {{ $variant->color->value ?? '' }}
+                            </p>
+                        @endif
+                        <p><strong>Giá:</strong> {{ number_format($price, 0, ',', '.') }} VND</p>
+                        <p><strong>Số lượng:</strong> {{ $buyNow['quantity'] }}</p>
+                    </div>
+                @elseif(!empty($cartItems))
                     @foreach ($cartItems as $item)
-                        <input type="hidden" name="selected_items[]" value="{{ $item['cart_detail_id'] }}">
+                        <div class="border-b py-3 text-sm">
+                            <p><strong>{{ $item['product']->product_name }}</strong></p>
+                            @if ($item['variant'])
+                                <p class="text-gray-600">
+                                    {{ $item['variant']->ram->value ?? '' }} /
+                                    {{ $item['variant']->storage->value ?? '' }} /
+                                    {{ $item['variant']->color->value ?? '' }}
+                                </p>
+                            @endif
+                            <p>SL: {{ $item['quantity'] }}</p>
+                        </div>
                     @endforeach
                 @endif
+            </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-header bg-primary text-white">📌 Thông tin người nhận</div>
-                            <div class="card-body">
-                                <p><strong>Họ tên:</strong> {{ Auth::user()->full_name }}</p>
-                                <p><strong>Email:</strong> {{ Auth::user()->email }}</p>
-                                <p><strong>Số điện thoại:</strong> {{ Auth::user()->phone ?? 'Chưa có' }}</p>
-                                <p><strong>Địa chỉ:</strong> {{ Auth::user()->address ?? 'Chưa có' }}</p>
-                                <a href="{{ route('user.profile') }}" class="btn btn-sm btn-warning mt-2">✏️ Cập nhật thông
-                                    tin</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-header bg-success text-white">📦 Thông tin sản phẩm</div>
-                            <div class="card-body">
+        </div>
 
-                                {{-- Nếu mua ngay --}}
-                                @if ($buyNow && isset($product))
-                                    @php
-                                        $availableQty = $variant ? $variant->quantity : $product->quantity;
-                                        $price = $variant
-                                            ? ($variant->discount_price !== null &&
-                                            $variant->discount_price < $variant->price
-                                                ? $variant->discount_price
-                                                : $variant->price)
-                                            : ($product->discount_price !== null &&
-                                            $product->discount_price < $product->price
-                                                ? $product->discount_price
-                                                : $product->price);
+        {{-- VOUCHER --}}
+        <div class="bg-white p-6 rounded-2xl shadow">
+            <h3 class="font-semibold mb-4">🏷️ Chọn voucher</h3>
 
-                                        if ($availableQty < $buyNow['quantity']) {
-                                            $outOfStock = true;
-                                        }
-                                    @endphp
+            <select name="voucher_id"
+                    id="voucher-select"
+                    class="w-full border rounded-lg px-4 py-2">
+                <option value="" data-type="" data-value="0">
+                    -- Không sử dụng --
+                </option>
+                @foreach ($vouchers as $voucher)
+                    <option value="{{ $voucher->id }}"
+                            data-type="{{ $voucher->discount_type }}"
+                            data-value="{{ $voucher->discount_value }}">
+                        {{ $voucher->name }} - {{ $voucher->code }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                                    <p><strong>Tên sản phẩm:</strong> {{ $product->product_name }}</p>
-                                    @if ($variant)
-                                        <p><strong>Phiên bản:</strong>
-                                            {{ $variant->ram->value ?? '' }} /
-                                            {{ $variant->storage->value ?? '' }} /
-                                            {{ $variant->color->value ?? '' }}
-                                        </p>
-                                    @endif
-                                    <p><strong>Giá:</strong> {{ number_format($price, 0, ',', '.') }} VND</p>
-                                    <p><strong>Số lượng:</strong> {{ $buyNow['quantity'] }}</p>
+        {{-- TOTAL --}}
+        <div class="bg-white p-6 rounded-2xl shadow space-y-3">
+            <h3 class="font-semibold border-b pb-2">💰 Tổng tiền</h3>
 
-                                    @if ($availableQty < $buyNow['quantity'])
-                                        <div class="alert alert-danger mt-2">
-                                            Sản phẩm này đã hết hàng hoặc không đủ số lượng!
-                                        </div>
-                                    @endif
+            <div class="flex justify-between">
+                <span>Tạm tính:</span>
+                <span id="subtotal">{{ number_format($subtotal, 0, ',', '.') }}</span>
+            </div>
 
-                                    {{-- Nếu từ giỏ hàng --}}
-                                @elseif(!empty($cartItems))
-                                    @php
-                                        $totalProducts = 0;
-                                        $totalItems = count($cartItems);
-                                    @endphp
-                                    @foreach ($cartItems as $item)
-                                        @php
-                                            $availableQty = $item['variant']
-                                                ? $item['variant']->quantity
-                                                : $item['product']->quantity;
+            <div class="flex justify-between">
+                <span>Phí vận chuyển:</span>
+                <span id="shipping">{{ number_format($shippingFee, 0, ',', '.') }}</span>
+            </div>
 
-                                            $itemPrice = $item['variant']
-                                                ? ($item['variant']->discount_price !== null &&
-                                                $item['variant']->discount_price < $item['variant']->price
-                                                    ? $item['variant']->discount_price
-                                                    : $item['variant']->price)
-                                                : ($item['product']->discount_price !== null &&
-                                                $item['product']->discount_price < $item['product']->price
-                                                    ? $item['product']->discount_price
-                                                    : $item['product']->price);
+            <div class="flex justify-between text-red-600">
+                <span>Giảm giá:</span>
+                <span id="discount">0</span>
+            </div>
 
-                                            $totalProducts += $item['quantity'];
+            <div class="border-t pt-3 flex justify-between text-lg font-bold">
+                <span>Thanh toán:</span>
+                <span id="total">{{ number_format($subtotal + $shippingFee, 0, ',', '.') }}</span>
+            </div>
+        </div>
 
-                                            if ($availableQty < $item['quantity']) {
-                                                $outOfStock = true;
-                                            }
-                                        @endphp
-                                        <hr>
-                                        <p><strong>Tên sản phẩm:</strong> {{ $item['product']->product_name }}</p>
-                                        @if ($item['variant'])
-                                            <p><strong>Phiên bản:</strong>
-                                                {{ $item['variant']->ram->value ?? '' }} /
-                                                {{ $item['variant']->storage->value ?? '' }} /
-                                                {{ $item['variant']->color->value ?? '' }}
-                                            </p>
-                                        @endif
-                                        <p><strong>Giá:</strong> {{ number_format($itemPrice, 0, ',', '.') }} VND</p>
-                                        <p><strong>Số lượng:</strong> {{ $item['quantity'] }}</p>
+        {{-- PAYMENT --}}
+        <div class="bg-white p-6 rounded-2xl shadow">
+            <h3 class="font-semibold mb-4">💳 Phương thức thanh toán</h3>
 
-                                        @if ($availableQty < $item['quantity'])
-                                            <div class="alert alert-danger mt-2">
-                                                Sản phẩm này đã hết hàng hoặc không đủ số lượng!
-                                            </div>
-                                        @endif
-                                    @endforeach
+            <div class="space-y-3">
+                <label class="flex items-center gap-3">
+                    <input type="radio" name="payment_method" value="cod">
+                    Thanh toán khi nhận hàng (COD)
+                </label>
 
-                                    <hr>
-                                    <p><strong>🛒 Tổng loại sản phẩm:</strong> {{ $totalItems }}</p>
-                                    <p><strong>📦 Tổng số lượng sản phẩm:</strong> {{ $totalProducts }}</p>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <label class="flex items-center gap-3">
+                    <input type="radio" name="payment_method" value="momo">
+                    Ví MoMo
+                </label>
+            </div>
+        </div>
 
-                <div class="card mb-4">
-                    <div class="card-header bg-warning">🏱 Chọn voucher (nếu có)</div>
-                    <div class="card-body">
-                        <select name="voucher_id" class="form-select" id="voucher-select">
-                            <option value="" data-type="" data-value="0">-- Không sử dụng --</option>
-                            @foreach ($vouchers as $voucher)
-                                <option value="{{ $voucher->id }}" data-type="{{ $voucher->discount_type }}"
-                                    data-value="{{ $voucher->discount_value }}">
-                                    {{ $voucher->name }} - Mã: {{ $voucher->code }}
-                                    ({{ $voucher->discount_type == 'percentage' ? $voucher->discount_value . '%' : number_format($voucher->discount_value, 0, ',', '.') . ' ₫' }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+        <div class="text-right">
+            <button type="submit"
+                class="px-8 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 text-lg font-semibold">
+                Xác nhận đặt hàng
+            </button>
+        </div>
 
-                <div class="card mb-4">
-                    <div class="card-header bg-dark text-white">💰 Tổng tiền</div>
-                    <div class="card-body">
-                        <p><strong>Tạm tính:</strong> <span
-                                id="subtotal">{{ number_format($subtotal, 0, ',', '.') }}</span> VND</p>
-                        <p><strong>Phí vận chuyển:</strong> <span
-                                id="shipping">{{ number_format($shippingFee, 0, ',', '.') }}</span> VND</p>
-                        <p><strong>Giảm giá:</strong>
-                            <span id="discount">0%</span>
-                            - <span id="discount-amount"></span> VND
-                        </p>
-                        <hr>
-                        <h5><strong>Thanh toán:</strong>
-                            <span
-                                id="total">{{ number_format($subtotal + $shippingFee - $discount, 0, ',', '.') }}</span>
-                            VND
-                        </h5>
+    </form>
 
-                    </div>
-                </div>
+    @else
+        <div class="p-6 bg-yellow-100 text-yellow-800 rounded-lg">
+            Không có sản phẩm nào để thanh toán.
+        </div>
+    @endif
 
-                <div class="card mb-4">
-                    <div class="card-header bg-info text-white">💳 Phương thức thanh toán</div>
-                    <div class="card-body">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_method" value="cod"
-                                id="cod">
-                            <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
-                        </div>
-                        <div class="form-check mt-2">
-                            <input class="form-check-input" type="radio" name="payment_method" value="momo"
-                                id="momo">
-                            <label class="form-check-label" for="momo">Ví MoMo</label>
-                        </div>
-
-                     
-
-                        
-
-
-                    </div>
-                </div>
-
-                <div id="cod-info-confirmation" class="card mb-4" style="display: none;">
-                    <div class="card-header bg-secondary text-white">✅ Xác nhận thông tin giao hàng</div>
-                    <div class="card-body">
-                        <p><strong>Họ tên:</strong> {{ Auth::user()->full_name }}</p>
-                        <p><strong>Số điện thoại:</strong> {{ Auth::user()->phone ?? 'Chưa có' }}</p>
-                        <p><strong>Địa chỉ:</strong> {{ Auth::user()->address ?? 'Chưa có' }}</p>
-                        <p class="text-danger mt-2">🚎 Vui lòng đảm bảo thông tin trên là chính xác để giao hàng.</p>
-                    </div>
-                </div>
-                <div id="wallet-info-confirmation" class="card mb-4" style="display: none;">
-                    <div class="card-header bg-secondary text-white">✅ Xác nhận thanh toán qua ví</div>
-                    <div class="card-body">
-                        <p><strong>Số dư hiện tại:</strong>
-                            {{ number_format(Auth::user()->wallet->balance ?? 0, 0, ',', '.') }} VND</p>
-                        <p class="text-danger mt-2">🧾 Số tiền sẽ bị trừ trực tiếp từ ví nếu đặt hàng.</p>
-                    </div>
-                </div>
-
-                <div class="text-end">
-                    <button type="submit" class="btn btn-success btn-lg"
-                        onclick="return confirm('Bạn có chắc chắn muốn đặt hàng không?')">
-                        Xác nhận đặt hàng
-                    </button>
-
-                </div>
-            </form>
-        @else
-            <div class="alert alert-warning">Không có sản phẩm nào để thanh toán.</div>
-        @endif
-    </div>
+</div>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const voucherSelect = document.getElementById('voucher-select');
-            const momoQRContainer = document.getElementById('momo-qr-container');
-            const momoQR = document.getElementById('momo-qr');
-            const momoAmount = document.getElementById('momo-amount');
-            const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
-
-            const shipping = {{ $shippingFee }};
-            const cartItems = @json($cartItems ?? []);
-
-            function calculateSubtotal() {
-                let subtotal = 0;
-                cartItems.forEach(item => {
-                    let price = item.discount_price && item.discount_price > 0 ? item.discount_price : item
-                        .price;
-                    subtotal += price * item.quantity;
-                });
-                return subtotal;
-            }
-
-            function calculateTotal() {
-                const subtotal = calculateSubtotal();
-                const option = voucherSelect.options[voucherSelect.selectedIndex];
-                const type = option ? option.dataset.type : null;
-                const value = parseFloat(option ? option.dataset.value : 0);
-
-                const discountAmount = type === 'percentage' ? subtotal * value / 100 : value;
-                const total = subtotal + shipping - discountAmount;
-
-                document.getElementById('subtotal').innerText =
-                    new Intl.NumberFormat('vi-VN').format(subtotal);
-                document.getElementById('discount').innerText =
-                    new Intl.NumberFormat('vi-VN').format(discountAmount);
-                document.getElementById('total').innerText =
-                    new Intl.NumberFormat('vi-VN').format(total) + ' VND';
-
-                return total;
-            }
-
-            voucherSelect.addEventListener('change', calculateTotal);
-
-            paymentRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const total = calculateTotal();
-                    momoQRContainer.style.display = this.value === 'momo' ? 'block' : 'none';
-                    if (this.value === 'momo') {
-                        momoAmount.innerText = new Intl.NumberFormat('vi-VN').format(total);
-                        momoQR.src = "{{ url('/generate-momo-qr') }}?amount=" + total;
-                    }
-                });
-            });
-
-            calculateTotal();
-            document.querySelector('input[name="payment_method"]:checked')?.dispatchEvent(new Event('change'));
-
-            form.addEventListener('submit', function(e) {
-                const phone = form.dataset.phone;
-                const address = form.dataset.address;
-                const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
-
-                if (!selectedPayment) {
-                    e.preventDefault();
-                    alert('Vui lòng chọn phương thức thanh toán.');
-                    return;
-                }
-
-                if (!phone || !address) {
-                    e.preventDefault();
-                    alert('Vui lòng cập nhật số điện thoại và địa chỉ trước khi đặt hàng.');
-                    return;
-                }
-
-                if (!confirm('Bạn chắc chắn muốn xác nhận đặt hàng?')) {
-                    e.preventDefault();
-                    return;
-                }
-                if (selectedPayment.value === 'wallet') {
-                    const walletBalance = {{ Auth::user()->wallet->balance ?? 0 }};
-                    const total = calculateTotal();
-
-                    if (walletBalance < total) {
-                        e.preventDefault();
-                        alert('❌ Số dư ví không đủ để thanh toán. Vui lòng nạp thêm.');
-                        return;
-                    }
-                }
-
-
-                // ❌ KHÔNG submit form momo ở đây nữa, vì đã được xử lý sau khi controller redirect sang momo_redirect.blade.php
-                // ✅ Form sẽ post về route checkout.store như bình thường
-            });
-        });
-    </script>
-@endpush
