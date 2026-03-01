@@ -153,51 +153,292 @@
                 {!! $product->description ?? 'Đang cập nhật...' !!}
             </div>
         </div>
+        <hr class="my-10 border-gray-300">
 
+@php
+    $user = auth()->user();
+    $comments = $comments->filter(fn($c) => !empty($c->comment));
+    $ratings = $reviews->filter(fn($r) => !empty($r->rating));
+
+    $limit = $limit ?? 6;
+    $totalComments = $totalComments ?? $comments->count();
+
+    $ratingLimit = request('rating_limit', 6);
+    $totalRatings = $ratings->count();
+    $displayRatings = $ratings->sortByDesc('created_at')->take($ratingLimit);
+@endphp
+
+{{-- Tabs --}}
+<div class="border-b border-gray-200">
+    <nav class="flex gap-6" id="reviewTab">
+        <button class="tab-btn py-3 border-b-2 border-black font-semibold"
+            data-tab="comments">
+            Bình luận ({{ $totalComments }})
+        </button>
+
+        <button class="tab-btn py-3 border-b-2 border-transparent text-gray-500"
+            data-tab="ratings">
+            Đánh giá ({{ $totalRatings }})
+        </button>
+    </nav>
+</div>
+
+<div class="mt-6">
+
+    {{-- Tab Bình luận --}}
+    <div class="tab-content" id="comments">
+
+        <h5 class="text-lg font-semibold mb-6">Danh sách bình luận</h5>
+
+        @if ($comments->count() > 0)
+
+            <ul class="space-y-4">
+                @foreach ($comments as $comment)
+                    <li class="bg-white border rounded-xl shadow-sm p-4">
+
+                        <div class="flex justify-between mb-2">
+                            <strong class="text-blue-600">
+                                {{ $comment->account->full_name ?? 'Người dùng ẩn danh' }}
+                            </strong>
+
+                            <small class="text-gray-500">
+                                {{ $comment->created_at->format('H:i d/m/Y') }}
+                            </small>
+                        </div>
+
+                        <p class="mb-2 text-sm text-gray-700">
+                            {{ $comment->comment }}
+                        </p>
+
+                        @if ($comment->image)
+                            <img src="{{ asset('storage/' . $comment->image) }}"
+                                class="border rounded-lg max-w-[130px] max-h-[130px]">
+                        @endif
+
+                    </li>
+                @endforeach
+            </ul>
+
+            <div class="text-center mt-4 space-x-2">
+                @if ($totalComments > $limit)
+                    <a href="{{ request()->fullUrlWithQuery(['limit' => $limit + 6]) }}"
+                        class="inline-block px-4 py-2 border border-blue-500 text-blue-600 rounded-lg text-sm hover:bg-blue-500 hover:text-white transition">
+                        Xem thêm
+                    </a>
+                @endif
+
+                @if ($limit > 6)
+                    <a href="{{ request()->fullUrlWithQuery(['limit' => 6]) }}"
+                        class="inline-block px-4 py-2 border border-gray-400 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">
+                        Ẩn bớt
+                    </a>
+                @endif
+            </div>
+
+        @else
+            <p class="text-gray-500 italic">Chưa có bình luận nào.</p>
+        @endif
+
+        <hr class="my-8">
+
+        {{-- Form gửi bình luận --}}
+        @if ($user)
+
+            <form action="{{ route('client.comments.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                class="space-y-4">
+                @csrf
+
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                <div>
+                    <label class="block font-semibold mb-2">
+                        Nội dung bình luận:
+                    </label>
+                    <textarea name="comment"
+                        rows="4"
+                        required
+                        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-black focus:outline-none"
+                        placeholder="Viết bình luận của bạn..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-2">
+                        Ảnh đính kèm (nếu có):
+                    </label>
+                    <input type="file"
+                        name="image"
+                        accept="image/*"
+                        class="w-full border rounded-lg p-2">
+                </div>
+
+                <button type="submit"
+                    class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
+                    Gửi bình luận
+                </button>
+            </form>
+
+        @else
+            <p class="mt-4">
+                Vui lòng
+                <a href="{{ route('taikhoan.login') }}"
+                    class="text-blue-600 hover:underline">
+                    đăng nhập
+                </a>
+                để bình luận.
+            </p>
+        @endif
+
+    </div>
+
+    {{-- Tab Đánh giá --}}
+    <div class="tab-content hidden" id="ratings">
+
+        @if ($totalRatings > 0)
+
+            <ul class="space-y-4">
+                @foreach ($displayRatings as $rating)
+
+                    <li class="bg-white border rounded-xl shadow-sm p-4">
+
+                        <div class="flex justify-between mb-2">
+                            <strong class="text-green-600">
+                                {{ $rating->account->full_name ?? 'Người dùng ẩn danh' }}
+                            </strong>
+
+                            <small class="text-gray-500">
+                                {{ $rating->created_at->format('H:i d/m/Y') }}
+                            </small>
+                        </div>
+
+                        <div class="mb-2 text-sm">
+                            <span class="font-semibold">Sản phẩm:</span>
+                            {{ $rating->product->product_name ?? 'N/A' }}
+                            <span class="ml-3 text-gray-600">
+                                {{ $rating->variant->ram->value ?? '' }} /
+                                {{ $rating->variant->storage->value ?? '' }} /
+                                {{ $rating->variant->color->value ?? '' }}
+                            </span>
+                        </div>
+
+                        <div class="mb-2">
+                            @for ($i = 1; $i <= 5; $i++)
+                                @if ($i <= $rating->rating)
+                                    <span class="text-yellow-400">&#9733;</span>
+                                @else
+                                    <span class="text-gray-300">&#9733;</span>
+                                @endif
+                            @endfor
+                            <span class="ml-2 font-bold">
+                                {{ $rating->rating }} sao
+                            </span>
+                        </div>
+
+                        @if (!empty($rating->comment))
+                            <p class="mb-2 text-sm">
+                                <strong>Nội dung:</strong>
+                                {{ $rating->comment }}
+                            </p>
+                        @endif
+
+                        @if (!empty($rating->image))
+                            <img src="{{ asset('storage/' . $rating->image) }}"
+                                class="border rounded-lg max-w-[130px] max-h-[130px]">
+                        @endif
+
+                    </li>
+
+                @endforeach
+            </ul>
+
+            <div class="text-center mt-4 space-x-2">
+                @if ($totalRatings > $ratingLimit)
+                    <a href="{{ request()->fullUrlWithQuery(['rating_limit' => $ratingLimit + 6]) }}"
+                        class="inline-block px-4 py-2 border border-blue-500 text-blue-600 rounded-lg text-sm hover:bg-blue-500 hover:text-white transition">
+                        Xem thêm
+                    </a>
+                @endif
+
+                @if ($ratingLimit > 6)
+                    <a href="{{ request()->fullUrlWithQuery(['rating_limit' => 6]) }}"
+                        class="inline-block px-4 py-2 border border-gray-400 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">
+                        Ẩn bớt
+                    </a>
+                @endif
+            </div>
+
+        @else
+            <p class="text-gray-500 italic">Chưa có đánh giá nào.</p>
+        @endif
+
+    </div>
+</div>
+
+{{-- JS chuyển tab --}}
+<script>
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('border-black','font-semibold');
+            b.classList.add('border-transparent','text-gray-500');
+        });
+
+        this.classList.remove('text-gray-500');
+        this.classList.add('border-black','font-semibold');
+
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.add('hidden');
+        });
+
+        document.getElementById(this.dataset.tab).classList.remove('hidden');
+    });
+});
+</script>
         {{-- RELATED --}}
         @if ($relatedProducts->count())
-    <hr class="my-10 border-gray-300">
+            <hr class="my-10 border-gray-300">
 
-    <h4 class="text-xl font-bold mb-6">Sản phẩm liên quan</h4>
+            <h4 class="text-xl font-bold mb-6">Sản phẩm liên quan</h4>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        @foreach ($relatedProducts as $item)
-            <div>
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition h-full">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                @foreach ($relatedProducts as $item)
+                    <div>
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition h-full">
 
-                    <a href="{{ route('product.show', $item->id) }}">
-                        <img src="{{ asset('storage/' . $item->image) }}"
-                             alt="{{ $item->product_name }}"
-                             class="w-full h-[200px] object-cover rounded-t-xl">
-                    </a>
-
-                    <div class="p-3">
-                        <h6 class="mb-2">
-                            <a href="{{ route('product.show', $item->id) }}"
-                               class="text-gray-800 hover:text-blue-600 font-medium line-clamp-2">
-                                {{ $item->product_name }}
+                            <a href="{{ route('product.show', $item->id) }}">
+                                <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->product_name }}"
+                                    class="w-full h-[200px] object-cover rounded-t-xl">
                             </a>
-                        </h6>
 
-                        <p class="mb-0 text-red-600 font-semibold">
-                            @if ($item->discount_price)
-                                {{ number_format($item->discount_price, 0, ',', '.') }} đ
+                            <div class="p-3">
+                                <h6 class="mb-2">
+                                    <a href="{{ route('product.show', $item->id) }}"
+                                        class="text-gray-800 hover:text-blue-600 font-medium line-clamp-2">
+                                        {{ $item->product_name }}
+                                    </a>
+                                </h6>
 
-                                <span class="block text-sm text-gray-400 line-through font-normal">
-                                    {{ number_format($item->price, 0, ',', '.') }} đ
-                                </span>
-                            @else
-                                {{ number_format($item->price, 0, ',', '.') }} đ
-                            @endif
-                        </p>
+                                <p class="mb-0 text-red-600 font-semibold">
+                                    @if ($item->discount_price)
+                                        {{ number_format($item->discount_price, 0, ',', '.') }} đ
+
+                                        <span class="block text-sm text-gray-400 line-through font-normal">
+                                            {{ number_format($item->price, 0, ',', '.') }} đ
+                                        </span>
+                                    @else
+                                        {{ number_format($item->price, 0, ',', '.') }} đ
+                                    @endif
+                                </p>
+                            </div>
+
+                        </div>
                     </div>
-
-                </div>
+                @endforeach
             </div>
-        @endforeach
-    </div>
-</form>
-@endif
+            </form>
+        @endif
 
     </div>
 
